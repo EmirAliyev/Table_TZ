@@ -1,32 +1,163 @@
 <template>
   <div id="app">
-    <nav>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </nav>
-    <router-view/>
+    <div @click="sortMode = !sortMode" class="sort_block">
+      <div class="title">Сортировать</div>
+    </div>
+    <div @click="sortByMen" class="selection" v-if="sortMode">Мужчины</div>
+    <div @click="sortByWomen" class="selection" v-if="sortMode">Женщины</div>
+    <div @click="withoutSort" class="selection" v-if="sortMode">
+      Без сортировки
+    </div>
+    <MyInput @newData="changeData"></MyInput>
+    <div class="main__Wrapper">
+      <MainLayer></MainLayer>
+      <UserLayer v-if="dataMode" :sortedMass="newMass"></UserLayer>
+      <UserLayer v-else :sortedMass="sortedMass"></UserLayer>
+    </div>
   </div>
 </template>
+<script>
+import MainLayer from "@/components/MainLayer.vue";
+import UserLayer from "@/components/UserLayer.vue";
+import MyInput from "@/UI/MyInput.vue";
+export default {
+  name: "App",
+  components: {
+    MainLayer,
+    UserLayer,
+    MyInput,
+  },
+  data() {
+    return {
+      standart: true,
+      men: false,
+      women: false,
+      sortMode: false,
+      newMass:[],
+      dataMode:false,
+    };
+  },
+  methods: {
+    withoutSort() {
+      (this.standart = true), (this.maxLikes = false), (this.minLikes = false);
+      this.$store.dispatch('loadAllData')
+    },
+    sortByMen() {
+      (this.standart = false), (this.men = true), (this.women = false);
+      this.$store.state.allUsers = this.$store.getters.allUsers.filter(
+        (user) => user.gender == "Male"
+      );
+    },
+    sortByWomen() {
+      (this.standart = false), (this.men = false), (this.women = true);
+      this.$store.state.allUsers = this.$store.getters.allUsers.filter(
+        (user) => user.gender == "Female"
+      );
+    },
+changeData(filteredUsers,inputValue){
+if(inputValue.length==0 || filteredUsers.length==1000){
+  this.newMass=[]
+  this.dataMode = false 
+} else {
+  this.newMass= filteredUsers
+  this.dataMode = true
+}
+}
+  },
+  computed: {
+    sortedMass() {
+      if (this.standart ) {
+        return this.$store.getters.alphabet;
+      }
+      else if (this.men) {
+        return (
+          this.$store.getters.users.filter((user) => user.gender == "Male") 
+        );
+      } else {
+        return (
+          this.$store.getters.users.filter((user) => user.gender == "Female")
+        );
+      }
+    },
+
+  },
+  mounted(){
+    this.$store.dispatch('loadAllData')
+  }
+};
+</script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.main__Wrapper {
+  position: relative;
+  top: 32rem;
+  left: 50%;
+  width: 133rem;
+  height: 28rem;
+  transform: translateX(-50%);
+  box-shadow: 0 0 0.3rem 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sort_block {
+  max-height: 30rem;
+  min-height: 4rem;
+  flex-direction: column;
+  display: flex;
+  font-size: 2rem;
+  margin: auto;
+  margin-top: 2rem;
+  background: rgb(48, 47, 47);
+  width: 20rem;
+  border-radius: 0.3rem;
+  justify-content: center;
+  color: white;
+  box-shadow: 0rem 0rem 0.2rem 0.1rem;
+  cursor: pointer;
+}
+.title {
   text-align: center;
-  color: #2c3e50;
+}
+.selection {
+  max-height: 15rem;
+  min-height: 4rem;
+  width: 20rem;
+  border-radius: 0.3rem;
+  margin: auto;
+  cursor: pointer;
+  font-size: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgb(48, 47, 47);
+  border-top: 0.1rem solid black;
+  color: white;
+  box-shadow: 0rem 0rem 0.2rem 0.1rem;
+}
+.sort_block:hover {
+  background: rgb(214, 211, 211);
+  color: black;
+  transform: scale(1.05);
+}
+.selection:hover {
+  background: rgb(214, 211, 211);
+  color: black;
+  transform: scale(1.05);
+}
+* {
+  padding: 0;
+  margin: 0;
+  border: 0;
 }
 
-nav {
-  padding: 30px;
+html {
+  font-size: 10px;
 }
 
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
 }
 </style>
