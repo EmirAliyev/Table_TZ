@@ -17,6 +17,7 @@
   </div>
 </template>
 <script>
+import { mapActions, mapGetters } from "vuex";
 import MainLayer from "@/components/MainLayer.vue";
 import UserLayer from "@/components/UserLayer.vue";
 import MyInput from "@/UI/MyInput.vue";
@@ -33,57 +34,53 @@ export default {
       men: false,
       women: false,
       sortMode: false,
-      newMass:[],
-      dataMode:false,
+      newMass: [],
+      dataMode: false,
     };
   },
   methods: {
+    ...mapActions(["loadAllData"]),
     withoutSort() {
       (this.standart = true), (this.maxLikes = false), (this.minLikes = false);
-      this.$store.dispatch('loadAllData')
+      this.loadAllData();
     },
     sortByMen() {
       (this.standart = false), (this.men = true), (this.women = false);
-      this.$store.state.allUsers = this.$store.getters.allUsers.filter(
+      this.$store.state.allUsers = this.allUsers_g.filter(
         (user) => user.gender == "Male"
       );
     },
     sortByWomen() {
       (this.standart = false), (this.men = false), (this.women = true);
-      this.$store.state.allUsers = this.$store.getters.allUsers.filter(
+      this.$store.state.allUsers = this.allUsers_g.filter(
         (user) => user.gender == "Female"
       );
     },
-changeData(filteredUsers,inputValue){
-if(inputValue.length==0 || filteredUsers.length==1000){
-  this.newMass=[]
-  this.dataMode = false 
-} else {
-  this.newMass= filteredUsers
-  this.dataMode = true
-}
-}
-  },
-  computed: {
-    sortedMass() {
-      if (this.standart ) {
-        return this.$store.getters.alphabet;
-      }
-      else if (this.men) {
-        return (
-          this.$store.getters.users.filter((user) => user.gender == "Male") 
-        );
+    changeData(filteredUsers, inputValue) {
+      if (inputValue.length == 0 || filteredUsers.length == 1000) {
+        this.newMass = [];
+        this.dataMode = false;
       } else {
-        return (
-          this.$store.getters.users.filter((user) => user.gender == "Female")
-        );
+        this.newMass = filteredUsers;
+        this.dataMode = true;
       }
     },
-
   },
-  mounted(){
-    this.$store.dispatch('loadAllData')
-  }
+  computed: {
+    ...mapGetters(["alphabet_g", "users_g", "allUsers_g"]),
+    sortedMass() {
+      if (this.standart) {
+        return this.alphabet_g;
+      } else if (this.men) {
+        return this.users_g.filter((user) => user.gender == "Male");
+      } else {
+        return this.users_g.filter((user) => user.gender == "Female");
+      }
+    },
+  },
+  mounted() {
+    this.loadAllData();
+  },
 };
 </script>
 

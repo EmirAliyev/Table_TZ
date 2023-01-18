@@ -1,10 +1,6 @@
 <template>
   <div class="user__layout_wrapper">
-    <div
-      class="user_information"
-      v-for="user in sortedMass"
-      :key="user.id"
-    >
+    <div class="user_information" v-for="user in sortedMass" :key="user.id">
       <CheckBox class="box_users"></CheckBox>
       <div>{{ user.first_name }} {{ user.id }}</div>
       <div>{{ user.last_name }}</div>
@@ -16,17 +12,20 @@
 </template>
 <script>
 import CheckBox from "@/UI/CheckBox.vue";
+import { mapActions } from "vuex";
 export default {
   name: "UserLayout",
   components: {
     CheckBox,
   },
-  props:{
-   sortedMass:Array,
+  props: {
+    sortedMass: Array,
   },
   data() {
-    return {
-    };
+    return {};
+  },
+  methods: {
+    ...mapActions(["loadData"]),
   },
   mounted() {
     const options = {
@@ -35,15 +34,13 @@ export default {
     };
     const callback = (entries, observer) => {
       if (entries[0].isIntersecting) {
-         this.$store.dispatch('loadData')
-          }
+        this.loadData();
+      }
     };
     const observer = new IntersectionObserver(callback, options);
-    observer.observe(this.$refs.observer)
+    observer.observe(this.$refs.observer);
   },
-  computed:{
-
-  }
+  computed: {},
 };
 </script>
 
@@ -72,6 +69,6 @@ export default {
   align-items: center;
 }
 .observer {
-  background: green;
+  height: 10px;
 }
 </style>

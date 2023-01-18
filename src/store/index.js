@@ -11,27 +11,28 @@ export default new Vuex.Store({
     page: 1,
     limit: 100,
     totalPages: 0,
-    allUsers:[],
+    allUsers: [],
   },
   getters: {
-    users(state) {
+    users_g(state) {
       return state.users;
     },
-    alphabet(state) {
-    return state.alphabet =  state.users.sort((a, b) =>a.first_name.localeCompare(b.first_name));
+    alphabet_g(state) {
+      return (state.alphabet = state.users.sort((a, b) =>
+        a.first_name.localeCompare(b.first_name)
+      ));
     },
-    allUsers(state){
-      return state.allUsers
+    allUsers_g(state) {
+      return state.allUsers;
     },
-
   },
   mutations: {
     setData(state, response) {
       state.users = [...state.users, ...response];
     },
-    setAllUsers(state, response){
-      state.allUsers = response
-    }
+    setAllUsers(state, response) {
+      state.allUsers = response;
+    },
   },
   actions: {
     async loadData({ commit, state }) {
@@ -48,14 +49,11 @@ export default new Vuex.Store({
           commit("setData", response.data);
         });
     },
-    async loadAllData({commit}) {
-      return axios
-        .get("http://localhost:3000/users")
-        .then((response) => {
-          commit("setAllUsers", response.data);
-        });
+    async loadAllData({ commit }) {
+      return axios.get("http://localhost:3000/users").then((response) => {
+        commit("setAllUsers", response.data);
+      });
     },
-
   },
   modules: {},
 });

@@ -1,10 +1,17 @@
 <template>
   <div class="myInputBox__wrapper">
-    <input @keyup="sendData" v-model="inputValue" class="input" type="text" placeholder="Поиск ФИО, IP, Email" />
+    <input
+      @keyup="sendData"
+      v-model="inputValue"
+      class="input"
+      type="text"
+      placeholder="Поиск ФИО, IP, Email"
+    />
   </div>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
   name: "MyInput",
   data() {
@@ -12,15 +19,16 @@ export default {
       inputValue: "",
     };
   },
-  methods:{
-   sendData(){
-   this.$emit('newData', this.filteredUsers,this.inputValue)
-   }
+  methods: {
+    sendData() {
+      this.$emit("newData", this.filteredUsers, this.inputValue);
+    },
   },
   mounted() {},
   computed: {
+    ...mapGetters(["allUsers_g"]),
     filteredUsers() {
-      return this.$store.getters.allUsers.filter((user) => {
+      return this.allUsers_g.filter((user) => {
         let name = user.first_name
           .toLowerCase()
           .includes(this.inputValue.toLowerCase());
@@ -32,8 +40,10 @@ export default {
           " " +
           user.last_name.toLowerCase()
         ).includes(this.inputValue.toLowerCase());
-        let email = user.email.toLowerCase().includes(this.inputValue.toLowerCase())
-        let ip =  user.ip_address.includes(this.inputValue)
+        let email = user.email
+          .toLowerCase()
+          .includes(this.inputValue.toLowerCase());
+        let ip = user.ip_address.includes(this.inputValue);
         return name || surname || nameSurname || email || ip;
       });
     },
